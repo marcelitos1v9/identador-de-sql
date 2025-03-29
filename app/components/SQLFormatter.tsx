@@ -4,10 +4,10 @@ import { useState } from "react";
 import { formatSQL } from "../utils/sqlFormatter";
 
 export default function SQLFormatter() {
-  const [inputSQL, setInputSQL] = useState("");
-  const [formattedSQL, setFormattedSQL] = useState("");
-  const [showCopyMessage, setShowCopyMessage] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [inputSQL, setInputSQL] = useState<string>("");
+  const [formattedSQL, setFormattedSQL] = useState<string>("");
+  const [showCopyMessage, setShowCopyMessage] = useState<boolean>(false);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const handleFormatSQL = () => {
     try {
@@ -29,15 +29,20 @@ export default function SQLFormatter() {
     setFormattedSQL("");
   };
 
-  const handleUploadFiles = (event) => {
+  const handleUploadFiles = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files);
     setUploadedFiles(files);
   };
 
   const handleFormatAllFiles = () => {
     const formattedFiles = uploadedFiles.map((file) => {
-      const formatted = formatSQL(file);
-      return new File([formatted], `${file.name}_formatado.sql`, { type: "text/sql" });
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const sqlContent = e.target?.result as string;
+        const formatted = formatSQL(sqlContent);
+        return new File([formatted], `${file.name}_formatado.sql`, { type: "text/sql" });
+      };
+      reader.readAsText(file);
     });
     setUploadedFiles(formattedFiles);
   };

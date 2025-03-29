@@ -31,6 +31,9 @@ export function formatSQL(sql: string): string {
     sql = sql.replace(regex, `\n${keyword}`);
   });
 
+  // Adiciona quebra de linha após vírgulas
+  sql = sql.replace(/,\s*/g, ',\n');
+
   // Adiciona indentação
   let indentLevel = 0;
   const formattedLines = sql.split('\n').map(line => {
@@ -55,4 +58,4 @@ export function formatSQL(sql: string): string {
   });
 
   return formattedLines.join('\n');
-} 
+}
